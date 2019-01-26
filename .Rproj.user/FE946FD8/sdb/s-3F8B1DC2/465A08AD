@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#' Find the limit of a unilateral density distribution\n#'\n#' @details\n#' Take a \\code{BeamSeries} of density values of a beam and finds a plausible segmentation point, which can be considered the urban limit.\n#' The criterium for the point being: First point at which\n#' \\enumerate{\n#' \\item the value is lower than \\code{\"Threshold\"} and\n#' \\item the mean slope over the next \\code{SlopeWindow} data points is lower than \\code{SlopeThreshold}\n#' }\n#' If no point satisfies both conditions, NA is returned.\n#'\n#' @param BeamSeries a unilateral density distribution\n#' @param Threshold a threshold under which the density is considered nonurban\n#' @param SlopeWindow a forward looking search window in which the mean slope is evaluated\n#' @param SlopeThreshold the threshold under which the in SlopeWindow calculated mean of the slope is considered to be small\n#'\n#' @return Integer\n#'\n#' @seealso\n#' \\code{\\link{find_limit_star}}\n#'\n#'\n#' @importFrom zoo rollmean\n#' @export\n#' @author Johannes Mast\n\nfind_limit <- function(BeamSeries,Threshold=0.2,SlopeThreshold=0.0001,SlopeWindow=3){\n  BeamSlope <- diff(BeamSeries) #Caculate the slope\n  AvgBeamSlope <- zoo::rollmean(BeamSlope,SlopeWindow) #Calculate the moving average over SlopeWindow points\n  AvgBeamSlope <- c(AvgBeamSlope,rep(0,SlopeWindow)) # Zero padding to ensure the vector length adds up\n  Limit<-min(which(BeamSeries<=Threshold & AvgBeamSlope<=SlopeThreshold)) # FInd the limit as decribed above\n  if(!is.finite(Limit)){\n    Limit <- NA\n    warning(\"Double Criterium Failed, No Limit found\")\n  }\n  return(Limit)\n}\n\n\n\n\n\n\n",
+    "created" : 1548515713468.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1788413820",
+    "id" : "465A08AD",
+    "lastKnownWriteTime" : 1548515781,
+    "last_content_update" : 1548515781573,
+    "path" : "~/Studiendateien/R_Scripts/UrbanStars/R/find_limit.R",
+    "project_path" : "R/find_limit.R",
+    "properties" : {
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

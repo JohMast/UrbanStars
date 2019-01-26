@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#' Create a beam starting from a central point\n#'\n#' @details This function creates a beam object starting from a given \\code{UrbanCenter}.\n#' The returned Beam is a SpatialPolygonsDataFrame and is unprojected in WGS84 (EPSG:4326).\n#' It consists of \\code{NSegments} equally sized polygons of length \\code{BeamLength/NSegments} and width \\code{BeamWidth}. The \\code{UrbanCenter} lies on the midpoint of the innermost edge of the innermost segment. From there, the beam extends for \\code{BeamLength} meters at a true-north-azimuth of \\code{OffAngle}, the edges of the beam forming a geodesic between its corners.\n\n#'\n#' @param UrbanCenter a SpatialPoint object\n#' @param BeamWidth width of the beam in meters\n#' @param BeamLength length of the beam in meters\n#' @param NSegments number of segments of the beam\n#' @param OffAngle azimuth of the beam\n#'\n#' @return SpatialPolygonsDataframe\n#'\n#' @examples\n#' create_beam(UrbanCenter)\n#'\n#'@seealso\n#'\\code{\\link{create_beam}},\n#'\\code{\\link{create_star_click}},\n#'\\code{\\link[geosphere]{dest_point}}\n#'\n#' @importFrom geosphere destPoint\n#' @importFrom geosphere gcIntermediate\n#' @importFrom gdata interleave\n#' @import raster\n#' @import sp\n#' @export\n#' @author Johannes Mast\n\n#library(geosphere)\ncreate_beam <- function(UrbanCenter, BeamWidth = 10000, BeamLength =70000 ,NSegments = 10 ,OffAngle= 0) {\n\n\n  #To calculate the beam accurately, the coordinates are transformed to WGS84 longlat\n  UrbanCenter_reprojected <- spTransform(UrbanCenter,CRSobj = crs(\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs \"))\n\n  #Calculate the Length of a single segment\n  SegmentLength <- BeamLength/NSegments\n\n  #Calculate the starting points P1A and P1B\n  P1A <- destPoint(UrbanCenter_reprojected,b = OffAngle-90,d=BeamWidth/2)\n  P1B <- destPoint(UrbanCenter_reprojected,b = OffAngle+90,d=BeamWidth/2)\n\n  #calculate the ending points PNA and PNB\n  PNA <- destPoint(P1A,b = OffAngle,d=BeamLength)\n  PNB <- destPoint(P1B,b = OffAngle,d=BeamLength)\n\n  #Create Intermediate Points between them\n  InterPointsA <- gcIntermediate(P1A,PNA,addStartEnd = T,n = NSegments-1)\n  InterPointsB <- gcIntermediate(P1B,PNB,addStartEnd = T,n = NSegments-1)\n\n  #Create a dataframe of coordinates, grouped by Id\n  Id=rep(1:NSegments, each = 4)\n\n  #Use the InterPoints to create a dataframe of coordinates that then gets cbound to the ID\n  APoints <- InterPointsA[-(NSegments+1),] ##All A points except the last\n  BPoints <- InterPointsA[-1,]             ##All A points except the first\n  DPoints <- InterPointsB[-(NSegments+1),] ##All B points except the last\n  CPoints <- InterPointsB[-1,]            ##All B points except the first\n\n  #Create a List of coordinates, each list object containing the points for one polygon\n  PolyCoords <- (gdata::interleave(APoints,BPoints,CPoints,DPoints))\n  PolyCoordsList <- split(PolyCoords, Id)\n\n  #Creat Spatial Polygons Dataframe from the list object\n  ID=1:NSegments\n  BeamSpatialPolygons <- SpatialPolygons(mapply(\n    function(poly, id) {\n      xy <- matrix(poly, ncol=2, byrow=F)\n      Polygons(list(Polygon(xy)), ID=id)\n    },#end function\n    PolyCoordsList, ID\n  )#End mapply\n  )\n  BeamPolygonsDataFrame <- SpatialPolygonsDataFrame(BeamSpatialPolygons, data.frame(id=ID, row.names=ID))\n  BeamPolygonsDataFrame@proj4string <- crs(\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs \")\n  return(BeamPolygonsDataFrame)\n\n\n\n}\n",
+    "created" : 1548457424963.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1596263296",
+    "id" : "E01B2CFF",
+    "lastKnownWriteTime" : 1548457494,
+    "last_content_update" : 1548457494513,
+    "path" : "~/Studiendateien/R_Scripts/UrbanStars/R/create_beam.R",
+    "project_path" : "R/create_beam.R",
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

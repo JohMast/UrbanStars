@@ -30,7 +30,7 @@ download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/U
 ####(One of the datasets should contain a urban mask or building density layer)
 
 ##1.1: Create a normalized GUFNorm Layer
-GUF <- raster("DemoData/GUF_Demo.tif")
+GUF <- raster("GUF_Demo.tif")
 GUFNorm <- GUF / 255
 names(GUFNorm) <- "GUFNorm"
 

@@ -15,6 +15,17 @@ SlopeThreshold = 0.001
 Threshold = 0.2
 
 
+
+#Acquire Data
+download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/GUF_Demo.tif',destfile = "GUF_Demo.tif")
+download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/SRTM_Demo.tif',destfile = "SRTM_Demo.tif")
+download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/GUF_Demo.tif',destfile = "TS_Sel_Demo.tif")
+download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/UrbanCenters.csv',destfile = "UrbanCenters.csv")
+
+
+
+
+
 ####====================Step 1: Load and prepare Data=======================####
 ####(One of the datasets should contain a urban mask or building density layer)
 
@@ -24,17 +35,17 @@ GUFNorm <- GUF / 255
 names(GUFNorm) <- "GUFNorm"
 
 ##1.2: Select mean NDBI, NDWI, NDVI layers from the timescan stack
-TS <- stack("DemoData/TS_Demo.tif")
+TS <- stack("TS_Demo.tif")
 names(TS) <- c("NDBI", "NDWI", "NDVI")
 
 ##1.3: Create Aspect and Slope from the SRTM DEM
-SRTM <- raster("DemoData/SRTM_Demo.tif")
+SRTM <- raster("SRTM_Demo.tif")
 Aspect <- terrain(SRTM, opt = "aspect")
 Slope <- terrain(SRTM, opt = "slope")
 
 ####==========Step 2: Get a list of cities and start looping over it========####
 ##2.1: Read a list of Urban Centers
-UrbanCentersList <- read.csv2("DemoData/UrbanCenters.csv")[, ]
+UrbanCentersList <- read.csv2("UrbanCenters.csv")[, ]
 ##For the purpose of this Demo, we just work on one city
 UrbanCentersList <- UrbanCentersList[1,]
 ##2.2: Create a Point Shapefile from the List of Urban Centers

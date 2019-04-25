@@ -17,11 +17,10 @@ Threshold = 0.2
 
 
 #Acquire Data
-download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/GUF_Demo.tif',destfile = "GUF_Demo.tif")
-download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/SRTM_Demo.tif',destfile = "SRTM_Demo.tif")
-download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/GUF_Demo.tif',destfile = "TS_Sel_Demo.tif")
-download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/UrbanCenters.csv',destfile = "UrbanCenters.csv")
 
+download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/UrbanCenters.csv',destfile = "UrbanCenters.csv")
+download.file(url = 'https://github.com/JohMast/UrbanStars/raw/master/DemoData/Demo_Data.zip',destfile = "Demo_Data.zip")
+unzip("Demo_Data.zip")
 
 
 
@@ -156,9 +155,12 @@ par(mfrow=c(4,1))
 plot(Star,main="Star over Wuerzburg")
 plot(GUFNorm,add=T)
 plot(Star,add=T,col=Star$IsUrban,border=Star$IsUrban)
+plot(Star[Star$BeamId==4,],border="red",add=T,col=NA)
+plot(Star[Star$BeamId==(4*2),],border="red",add=T,col=NA)
 plot(StarCross[[4]]$SRTM,xlab="Position",ylab="SRTM",main="SRTM Profile");lines(StarCross[[4]]$SRTM,col="yellow");abline(v=which(diff(StarCross[[4]]$IsUrban)==1));abline(v=which(diff(StarCross[[4]]$IsUrban)==-1))
 plot(StarCross[[4]]$NDVI,xlab="Position",ylab="NDVI",main="NDVI Profile");lines(StarCross[[4]]$NDVI,col="green");abline(v=which(diff(StarCross[[4]]$IsUrban)==1));abline(v=which(diff(StarCross[[4]]$IsUrban)==-1))
 plot(StarCross[[4]]$NDBI,xlab="Position",ylab="NDBI",main="NDBI Profile");lines(StarCross[[4]]$NDBI,col="red");abline(v=which(diff(StarCross[[4]]$IsUrban)==1));abline(v=which(diff(StarCross[[4]]$IsUrban)==-1))
+
 
 
 
